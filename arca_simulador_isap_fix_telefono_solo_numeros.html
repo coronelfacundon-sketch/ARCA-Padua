@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ARCA – Simulación Educativa (ISAP) · Alta Monotributo</title>
+  <style>
+    :root{--primary:#0d5c63;--primary2:#157a85;--bg:#f4f7f8;--card:#ffffff;--text:#122126;--ok:#1b7f5b;--warn:#b26a00;--err:#b00020;--muted:#5a6b70;--shadow:0 10px 30px rgba(0,0,0,.08);--radius:18px;}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;padding:28px 20px 20px}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px} h1{margin:0;font-weight:800;font-size:26px}
+    .subtitle{opacity:.9;margin-top:6px}
+    .disclaimer{background:#fff2;border-left:4px solid #fff7;padding:10px 12px;margin-top:10px;border-radius:10px;font-size:14px}
+    .card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:18px}
+    .steps{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}
+    .step{flex:1 1 160px;background:#e8eff0;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;color:#234}
+    .step.active{background:#d1eef1;border:1px solid #9ad5db}.step .num{background:#0d5c63;color:#fff;border-radius:10px;padding:4px 8px;font-weight:800;min-width:28px;text-align:center}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+    .col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-7{grid-column:span 7}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+    label{font-weight:650;font-size:14px}
+    input,select,textarea{width:100%;padding:12px 11px;margin-top:6px;border:1px solid #d4dee1;border-radius:12px;background:#fbfeff;outline:none;transition:box-shadow .2s,border-color .2s}
+    input:focus,select:focus,textarea:focus{border-color:var(--primary2);box-shadow:0 0 0 3px rgba(21,122,133,.15)}
+    .invalid{border-color:var(--err)!important;box-shadow:0 0 0 3px rgba(176,0,32,.15)!important}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    .err{font-size:12px;color:#fff;background:var(--err);padding:6px 8px;border-radius:10px;margin-top:8px;display:none}
+    .err.show{display:inline-block}
+    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+    button{border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+    .btn{background:var(--primary);color:#fff}.btn.secondary{background:#e7eef0;color:#1b3136}.btn.ghost{background:transparent;border:2px solid #c6d7db;color:#234}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+    .badge.ok{background:#e5f6ef;color:var(--ok)}.badge.warn{background:#fff7e5;color:var(--warn)}
+    .review{background:#f5fbfc;border:1px dashed #9ad5db;border-radius:14px;padding:14px}
+    .brand{display:flex;align-items:center;gap:10px}.brand .logo{width:34px;height:34px;border-radius:8px;background:#fff;display:grid;place-items:center;color:#0d5c63;font-weight:900}
+    .fs-box{margin:12px 0;padding:10px;border:1px dashed #9ad5db;border-radius:12px;background:#f1fbfc}
+    .integrante{display:flex;gap:8px;margin-top:8px}
+    .integrante input{flex:1}
+    .tag{display:inline-block;padding:6px 10px;background:#eef5f6;border:1px solid #cfe1e4;border-radius:999px;margin:4px 6px 0 0;font-size:12px}
+    @media (max-width:780px){.col-8,.col-7,.col-6,.col-5,.col-4,.col-3{grid-column:span 12} .integrante{flex-direction:column}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap brand">
+    <div class="logo">A</div>
+    <div>
+      <h1>ARCA – Simulación Educativa</h1>
+      <div class="subtitle">Alta de Monotributo — <b>Instituto San Antonio de Padua (ISAP)</b> · <i>simulación</i></div>
+      <div class="disclaimer">Uso pedagógico. No envía datos a servidores ni organismos. No usar datos reales.</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="card">
+    <div class="steps" id="steps"></div>
+
+    <section data-step="0" class="step-panel">
+      <h2>0) Datos del grupo</h2>
+      <div class="grid">
+        <div class="col-6"><label>Curso</label><input id="curso" placeholder="Ej.: 5° Económica A" /></div>
+        <div class="col-12">
+          <label>Integrantes</label>
+          <div id="integrantesList"></div>
+          <div class="actions" style="justify-content:flex-start"><button class="btn ghost" type="button" onclick="agregarIntegrante()">+ Agregar integrante</button></div>
+          <div class="hint">Carguen todos los integrantes del grupo (mínimo 1). Pueden quitar con la ❌.</div>
+        </div>
+      </div>
+      <div class="err" data-for="step0"></div>
+      <div class="actions"><button class="btn" onclick="nextStep()">Continuar</button></div>
+    </section>
+
+    <section data-step="1" class="step-panel" hidden>
+      <h2>1) Identificación del contribuyente</h2>
+      <div class="grid">
+        <div class="col-6"><label>Nombre</label><input id="nombre" /></div>
+        <div class="col-6"><label>Apellido</label><input id="apellido" /></div>
+        <div class="col-4"><label>Tipo de documento</label><select id="tipoDoc"><option>DNI</option><option>LE</option><option>LC</option></select></div>
+        <div class="col-4"><label>Número de documento (ficticio)</label><input id="nroDoc" placeholder="7–9 dígitos" maxlength="9" /></div>
+        <div class="col-4"><label>CUIT/CUIL (opcional, simulado)</label><input id="cuit" placeholder="11 dígitos" maxlength="11" /></div>
+        <div class="col-4"><label>Fecha de nacimiento</label><input id="nacimiento" type="text" placeholder="dd/mm/aaaa o aaaa-mm-dd" /></div>
+        <div class="col-4"><label>Género</label><select id="genero"><option value="">Seleccionar</option><option>Femenino</option><option>Masculino</option><option>Otro / Prefiero no decir</option></select></div>
+        <div class="col-4"><label>Nacionalidad</label><input id="nacionalidad" placeholder="Argentina, etc." /></div>
+        <div class="col-6"><label>Email</label><input id="email" placeholder="correo@colegio.com" /></div>
+        <div class="col-6"><label>Teléfono</label><input id="telefono" type="text" inputmode="numeric" placeholder="Ej: 1123456789" /></div>
+      </div>
+      <div class="err" data-for="step1"></div>
+      <div class="actions"><button class="btn" onclick="nextStep()">Continuar</button></div>
+    </section>
+
+    <section data-step="2" class="step-panel" hidden>
+      <h2>2) Domicilio fiscal</h2>
+      <div class="grid">
+        <div class="col-6"><label>Calle</label><input id="calle" /></div>
+        <div class="col-3"><label>Número</label><input id="numero" /></div>
+        <div class="col-3"><label>Piso / Depto (opcional)</label><input id="piso" placeholder="Piso, Dpto" /></div>
+        <div class="col-5"><label>Barrio / Localidad</label><input id="localidad" /></div>
+        <div class="col-4"><label>Provincia</label><select id="provincia"></select></div>
+        <div class="col-3"><label>Código Postal</label><input id="cp" placeholder="1623 o 1623ABC" maxlength="7" /><div class="hint">Bs. As.: 4 dígitos. Resto/CABA: 4 dígitos o CPA (1623ABC).</div></div>
+        <div class="col-12"><label>¿El domicilio comercial es el mismo?</label><select id="domComercialIgual"><option value="si">Sí</option><option value="no">No, completar a continuación</option></select></div>
+      </div>
+      <div id="domComercialBox" hidden>
+        <h3>Domicilio comercial</h3>
+        <div class="grid">
+          <div class="col-6"><label>Calle</label><input id="c_calle" /></div>
+          <div class="col-3"><label>Número</label><input id="c_numero" /></div>
+          <div class="col-3"><label>Piso / Depto (opcional)</label><input id="c_piso" /></div>
+          <div class="col-5"><label>Barrio / Localidad</label><input id="c_localidad" /></div>
+          <div class="col-4"><label>Provincia</label><select id="c_provincia"></select></div>
+          <div class="col-3"><label>Código Postal</label><input id="c_cp" placeholder="1623 o 1623ABC" maxlength="7" /></div>
+        </div>
+      </div>
+      <div class="err" data-for="step2"></div>
+      <div class="actions"><button class="btn secondary" onclick="prevStep()">Atrás</button><button class="btn" onclick="nextStep()">Continuar</button></div>
+    </section>
+
+    <section data-step="3" class="step-panel" hidden>
+      <h2>3) Actividad económica</h2>
+      <div class="grid">
+        <div class="col-6"><label>Código de actividad (simulado)</label><select id="actividad"></select><div class="hint">Lista pedagógica.</div></div>
+        <div class="col-6"><label>Descripción (opcional)</label><input id="actDesc" placeholder="Breve descripción" /></div>
+        <div class="col-4"><label>Fecha de inicio</label><input id="fechaInicio" type="text" placeholder="dd/mm/aaaa o aaaa-mm-dd" /></div>
+        <div class="col-4"><label>Medio de facturación</label><select id="factura"><option>Electrónica</option><option>Manual</option></select></div>
+        <div class="col-4"><label>¿Tiene empleados?</label><select id="empleados"><option>No</option><option>Sí</option></select></div>
+      </div>
+      <div class="err" data-for="step3"></div>
+      <div class="actions"><button class="btn secondary" onclick="prevStep()">Atrás</button><button class="btn" onclick="nextStep()">Continuar</button></div>
+    </section>
+
+    <section data-step="4" class="step-panel" hidden>
+      <h2>4) Parámetros del régimen simplificado</h2>
+      <div class="grid">
+        <div class="col-4"><label>Ingresos brutos anuales estimados ($)</label><input id="ingresos" inputmode="numeric" placeholder="2400000" /></div>
+        <div class="col-4"><label>Superficie afectada (m²)</label><input id="superficie" inputmode="numeric" placeholder="10" /></div>
+        <div class="col-4"><label>Energía consumida (kWh/año, opcional)</label><input id="energia" inputmode="numeric" placeholder="0" /></div>
+        <div class="col-4"><label>Alquiler anual del local ($, opcional)</label><input id="alquiler" inputmode="numeric" placeholder="0" /></div>
+        <div class="col-4"><label>Obra social (opcional)</label><select id="obraSocial"><option value="">Ninguna</option><option>O.S. Docente</option><option>O.S. Comercio</option><option>O.S. Construcción</option></select></div>
+        <div class="col-4"><label>Adhesión a débito automático</label><select id="debito"><option>No</option><option>Sí</option></select></div>
+        <div class="col-12"><div id="categoriaBox" class="badge warn">Complete ingresos para estimar categoría…</div><div class="hint">Escalas <b>simuladas</b> para práctica escolar.</div></div>
+      </div>
+
+      <div class="fs-box">
+        <b>Guardar en un archivo de la carpeta (opcional):</b>
+        <div class="hint">Elegí <b>datos.xls</b> o un CSV. Si no elegís nada, al confirmar se descargará <b>datos.xls</b> automáticamente.</div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+          <button class="btn ghost" onclick="elegirDestino()">Elegir archivo destino…</button>
+          <span id="destInfo" class="hint">ninguno seleccionado</span>
+        </div>
+      </div>
+
+      <div class="err" data-for="step4"></div>
+      <div class="actions"><button class="btn secondary" onclick="prevStep()">Atrás</button><button class="btn" onclick="nextStep()">Revisar</button></div>
+    </section>
+
+    <section data-step="5" class="step-panel" hidden>
+      <h2>5) Revisión y confirmación</h2>
+      <div class="review" id="resumen"></div>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin-top:12px"><input type="checkbox" id="acepta" /><span>Declaro que los datos cargados son ficticios y utilizados únicamente con fines educativos.</span></label>
+      <div class="err" data-for="step5"></div>
+      <div class="actions"><button class="btn secondary" onclick="prevStep()">Atrás</button><button class="btn" onclick="confirmar()">Confirmar alta (simulada)</button></div>
+    </section>
+
+    <section data-step="6" class="step-panel" hidden>
+      <h2>Constancia de inscripción – Simulación</h2>
+      <div id="constancia" class="card" style="padding:16px;background:#fff;border:1px solid #e3eef1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div class="brand"><div class="logo">A</div><b>ARCA – Simulación Educativa (ISAP)</b></div><div class="badge ok">Válida solo para prácticas escolares</div></div>
+        <div id="constanciaDatos"></div>
+        <div style="margin-top:10px;font-size:12px;color:#3a545a">Código verificación (ficticio): <span id="codigo"></span></div>
+      </div>
+      <div class="actions"><button class="btn" onclick="window.print()">Imprimir / Guardar PDF</button><button class="btn ghost" onclick="nuevaCarga()">Nueva inscripción</button><button class="btn secondary" onclick="exportExcel()">Descargar datos.xls</button></div>
+      <div class="hint">Los registros se guardan en este dispositivo (almacenamiento local). Limpiarlos: <a href="#" onclick="borrarRegistros();return false;">borrar todo</a>.</div>
+    </section>
+  </div>
+</main>
+
+<script>
+  const PROVINCIAS=["Buenos Aires","CABA","Catamarca","Chaco","Chubut","Córdoba","Corrientes","Entre Ríos","Formosa","Jujuy","La Pampa","La Rioja","Mendoza","Misiones","Neuquén","Río Negro","Salta","San Juan","San Luis","Santa Cruz","Santa Fe","Santiago del Estero","Tierra del Fuego","Tucumán"];
+  const ACTIVIDADES=[{id:"471130",nombre:"Kiosco / Venta minorista general"},{id:"620100",nombre:"Desarrollo/soporte de software"},{id:"561020",nombre:"Gastronomía (takeaway)"},{id:"855300",nombre:"Docencia particular / cursos"},{id:"433010",nombre:"Carpintería / oficios"}];
+  const ESCALAS=[{cat:"A",max:1500000,cuota:12000},{cat:"B",max:3000000,cuota:18000},{cat:"C",max:6000000,cuota:26000},{cat:"D",max:9000000,cuota:38000},{cat:"E",max:12000000,cuota:52000},{cat:"F",max:15000000,cuota:70000},{cat:"G",max:18000000,cuota:88000},{cat:"H",max:24000000,cuota:110000}];
+
+  const state = JSON.parse(localStorage.getItem('arca_sim_state_fixphone')||'{}');
+  const registros = JSON.parse(localStorage.getItem('arca_sim_registros_fixphone')||'[]');
+  let destinoHandle = null; let destinoName = null;
+
+  const $=s=>document.querySelector(s); const $$=s=>Array.from(document.querySelectorAll(s));
+  function saveState(){localStorage.setItem('arca_sim_state_fixphone',JSON.stringify(state));}
+  function setVal(id,val){const el=document.getElementById(id); if(el){el.value=val??'';}}
+  function getVal(id){return (document.getElementById(id)?.value||'').trim();}
+  function setErrBox(stepId,msg){const e=$(`.err[data-for="${stepId}"]`); if(!e) return; if(msg){e.textContent=msg; e.classList.add('show');} else {e.textContent=''; e.classList.remove('show');}}
+
+  const TITULOS=["Grupo","Identificación","Domicilios","Actividad","Parámetros","Revisión","Constancia"];
+  function renderSteps(cur=0){const wrap=$('#steps'); wrap.innerHTML=''; TITULOS.forEach((t,i)=>{const d=document.createElement('div'); d.className='step'+(i===cur?' active':''); d.innerHTML=`<div class="num">${i}</div> <div>${t}</div>`; wrap.appendChild(d);});}
+  let currentStep=0;
+  function showStep(n){currentStep=n; renderSteps(n); $$('.step-panel').forEach(sec=>{sec.hidden=(parseInt(sec.dataset.step)!==n)}); window.scrollTo({top:0,behavior:'smooth'}); if(n===4) calcCategoria(); if(n===5) renderResumen(); if(n===6) renderConstancia();}
+
+  function agregarIntegrante(valor=''){const cont=$('#integrantesList'); const row=document.createElement('div'); row.className='integrante'; row.innerHTML=`<input type="text" placeholder="Nombre y apellido" value="${valor.replace(/"/g,'&quot;')}" /> <button class="btn secondary" type="button" onclick="this.parentElement.remove()">❌</button>`; cont.appendChild(row);}
+  agregarIntegrante();
+
+  function initOptions(){const ps=$('#provincia'), cps=$('#c_provincia'); PROVINCIAS.forEach(p=>{const o=document.createElement('option'); o.textContent=p; ps.appendChild(o.cloneNode(true)); cps.appendChild(o);}); const actSel=$('#actividad'); ACTIVIDADES.forEach(a=>{const o=document.createElement('option'); o.value=a.id; o.textContent=`${a.id} — ${a.nombre}`; actSel.appendChild(o);});}
+  function parseDate(str){ if(!str) return null; const s=str.trim(); const m1=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/); if(m1){const d=new Date(+m1[3],+m1[2]-1,+m1[1]); return isNaN(d)?null:d;} const m2=s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/); if(m2){const d=new Date(+m2[1],+m2[2]-1,+m2[3]); return isNaN(d)?null:d;} const d=new Date(s); return isNaN(d)?null:d; }
+  const emailNorm=v=>(v||'').toLowerCase().replace(/\s+/g,'').trim();
+  const emailOk=v=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailNorm(v));
+  const digitsOnly=v=>(v||'').replace(/\D/g,'');
+  const phoneOk=v=>{const n=digitsOnly(v).length; return n>=6 && n<=15;};
+  const pastOrToday=s=>{const d=parseDate(s); if(!d) return false; const t=new Date(); d.setHours(0,0,0,0); t.setHours(0,0,0,0); return d<=t;};
+  const adultEnough=s=>{const d=parseDate(s); if(!d) return false; const t=new Date(); let years=t.getFullYear()-d.getFullYear(); const m=t.getMonth()-d.getMonth(); const dd=t.getDate()-d.getDate(); if(m<0||(m===0&&dd<0)) years--; return years>=14;};
+  const dniOk=v=>/^\d{7,9}$/.test(v||'');
+  const cuitOk=v=>{if(!v) return true; const s=digitsOnly(v); return /^\d{11}$/.test(s);};
+  const isCP=(v,p)=>{if(!v) return false; if((p||'').toLowerCase()==='buenos aires') return /^\d{4}$/.test(v); return /^\d{4}([A-Za-z]{3})?$/.test(v);};
+
+  // Sanitizador estricto SOLO dígitos para Teléfono
+  const tel = ()=>document.getElementById('telefono');
+  document.addEventListener('input',e=>{
+    const id=e.target?.id;
+    if(id==='nroDoc') e.target.value=digitsOnly(e.target.value);
+    if(id==='cuit') e.target.value=digitsOnly(e.target.value).slice(0,11);
+    if(id==='telefono') e.target.value=digitsOnly(e.target.value); // <-- solo números
+    if(id==='email') e.target.value=emailNorm(e.target.value);
+    if(id==='cp' || id==='c_cp') e.target.value=e.target.value.toUpperCase().replace(/[^0-9A-Z]/g,'');
+    if(id==='numero' || id==='c_numero') e.target.value=digitsOnly(e.target.value).slice(0,6);
+    if(id==='ingresos' || id==='superficie' || id==='energia' || id==='alquiler') e.target.value=digitsOnly(e.target.value);
+  });
+  // Además, bloqueamos teclas no numéricas
+  document.addEventListener('keydown', e=>{
+    if(e.target?.id==='telefono'){
+      const allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Home','End'];
+      if(allowed.includes(e.key)) return;
+      if(!/^[0-9]$/.test(e.key)){ e.preventDefault(); }
+    }
+  });
+  $('#domComercialIgual')?.addEventListener('change', ()=>{ const show=$('#domComercialIgual').value==='no'; $('#domComercialBox').hidden=!show; });
+
+  function setInvalid(id,flag){const el=document.getElementById(id); if(!el) return; if(flag){el.classList.add('invalid');} else {el.classList.remove('invalid');}}
+
+  function validateStep(step){
+    let ok=true; setErrBox('step'+step,'');
+    if(step===0){
+      const curso=getVal('curso');
+      const integrantes=[...$('#integrantesList').querySelectorAll('input')].map(i=>i.value.trim()).filter(Boolean);
+      if(!curso){ ok=false; setErrBox('step0','Ingresá el curso.'); $('#curso').classList.add('invalid'); $('#curso').focus(); }
+      else $('#curso').classList.remove('invalid');
+      if(integrantes.length===0){ ok=false; setErrBox('step0','Cargá al menos un integrante.'); }
+      if(ok){ Object.assign(state,{curso,integrantes}); saveState(); }
+    }
+    if(step===1){
+      const campos=[['nombre',v=>!!v,'Ingresá nombre'],['apellido',v=>!!v,'Ingresá apellido'],['nroDoc',dniOk,'DNI: 7–9 dígitos'],['cuit',cuitOk,'CUIT/CUIL: 11 dígitos (opcional)'],['nacimiento',v=>pastOrToday(v)&&adultEnough(v),'Fecha de nacimiento inválida'],['email',emailOk,'Correo no válido'],['telefono',phoneOk,'Teléfono: 6-15 dígitos']];
+      for(const [id,fn,msg] of campos){const v=getVal(id); const okField=fn(v); setInvalid(id,!okField); if(!okField && ok){ok=false; setErrBox('step1',msg); document.getElementById(id).focus();}}
+      if(ok){Object.assign(state,{nombre:getVal('nombre'),apellido:getVal('apellido'),tipoDoc:getVal('tipoDoc'),nroDoc:getVal('nroDoc'),cuit:getVal('cuit'),nacimiento:getVal('nacimiento'),genero:getVal('genero'),nacionalidad:getVal('nacionalidad'),email:emailNorm(getVal('email')),telefono:getVal('telefono')}); saveState();}
+    }
+    if(step===2){
+      const campos=[['calle',v=>!!v,'Ingresá calle'],['numero',v=>/^\d{1,6}$/.test(v),'Número inválido'],['localidad',v=>!!v,'Ingresá localidad'],['provincia',v=>!!v,'Seleccioná provincia'],['cp',v=>isCP(v,getVal('provincia')),'CP inválido para la provincia']];
+      for(const [id,fn,msg] of campos){const v=getVal(id); const okField=fn(v); setInvalid(id,!okField); if(!okField && ok){ok=false; setErrBox('step2',msg); document.getElementById(id).focus();}}
+      const igual=$('#domComercialIgual').value!=='no';
+      if(!igual){
+        const camposC=[['c_calle',v=>!!v,'Domicilio comercial: calle'],['c_numero',v=>/^\d{1,6}$/.test(v),'Domicilio comercial: número'],['c_localidad',v=>!!v,'Domicilio comercial: localidad'],['c_provincia',v=>!!v,'Domicilio comercial: provincia'],['c_cp',v=>isCP(v,getVal('c_provincia')),'Domicilio comercial: CP inválido']];
+        for(const [id,fn,msg] of camposC){const v=getVal(id); const okField=fn(v); setInvalid(id,!okField); if(!okField && ok){ok=false; setErrBox('step2',msg); document.getElementById(id).focus();}}
+      }
+      if(ok){
+        Object.assign(state,{calle:getVal('calle'),numero:getVal('numero'),piso:getVal('piso'),localidad:getVal('localidad'),provincia:getVal('provincia'),cp:getVal('cp')});
+        if(igual){Object.assign(state,{c_calle:state.calle,c_numero:state.numero,c_piso:state.piso,c_localidad:state.localidad,c_provincia:state.provincia,c_cp:state.cp});}
+        else {Object.assign(state,{c_calle:getVal('c_calle'),c_numero:getVal('c_numero'),c_piso:getVal('c_piso'),c_localidad:getVal('c_localidad'),c_provincia:getVal('c_provincia'),c_cp:getVal('c_cp')});}
+        saveState();
+      }
+    }
+    if(step===3){
+      const campos=[['actividad',v=>!!v,'Seleccioná actividad'],['fechaInicio',v=>pastOrToday(v),'Fecha de inicio inválida']];
+      for(const [id,fn,msg] of campos){const v=getVal(id); const okField=fn(v); setInvalid(id,!okField); if(!okField && ok){ok=false; setErrBox('step3',msg); document.getElementById(id).focus();}}
+      if(ok){Object.assign(state,{actividad:getVal('actividad'),actDesc:getVal('actDesc'),fechaInicio:getVal('fechaInicio'),factura:getVal('factura'),empleados:getVal('empleados')}); saveState();}
+    }
+    if(step===4){
+      const campos=[['ingresos',v=>+v>0,'Ingresos > 0'],['superficie',v=>+v>=0,'Superficie >= 0']];
+      for(const [id,fn,msg] of campos){const v=getVal(id); const okField=fn(v); setInvalid(id,!okField); if(!okField && ok){ok=false; setErrBox('step4',msg); document.getElementById(id).focus();}}
+      if(ok){Object.assign(state,{ingresos:+getVal('ingresos'),superficie:+getVal('superficie'),energia:+getVal('energia'||0),alquiler:+getVal('alquiler'||0),obraSocial:getVal('obraSocial'),debito:getVal('debito')}); calcCategoria(); saveState();}
+    }
+    if(step===5){
+      const acepta=$('#acepta').checked; if(!acepta){ok=false; setErrBox('step5','Debés aceptar la declaración.');}
+    }
+    return ok;
+  }
+
+  function calcCategoria(){ const v=+getVal('ingresos')||state.ingresos||0; const f=ESCALAS.find(e=>v<=e.max)||ESCALAS[ESCALAS.length-1]; state.categoria=f.cat; state.cuota=f.cuota; const box=$('#categoriaBox'); if(v>0){box.className='badge ok'; box.textContent=`Categoría estimada: ${f.cat} – cuota simulada $ ${f.cuota.toLocaleString('es-AR')}`;} else {box.className='badge warn'; box.textContent='Complete ingresos para estimar categoría…';}}
+  function renderResumen(){ const act = ACTIVIDADES.find(a=>a.id===state.actividad)?.nombre || state.actividad || ''; const integrantes = (state.integrantes||[]).map(n=>`<span class="tag">${n}</span>`).join(''); $('#resumen').innerHTML=`<div class="grid"><div class="col-12"><b>Grupo (${state.curso||''})</b><br>${integrantes||'-'}</div><div class="col-6"><b>Contribuyente</b><br>${state.apellido||''}, ${state.nombre||''} — ${state.tipoDoc||''} ${state.nroDoc||''} ${state.cuit?('— CUIT/CUIL '+state.cuit):''}</div><div class="col-6"><b>Nacimiento / Género</b><br>${state.nacimiento||''} · ${state.genero||''} · ${state.nacionalidad||''}</div><div class="col-6"><b>Contacto</b><br>${state.email||''} · ${state.telefono||''}</div><div class="col-6"><b>Domicilio fiscal</b><br>${state.calle||''} ${state.numero||''} ${state.piso?('('+state.piso+')'):''}, ${state.localidad||''}, ${state.provincia||''} (${state.cp||''})</div><div class="col-6"><b>Domicilio comercial</b><br>${state.c_calle||''} ${state.c_numero||''} ${state.c_piso?('('+state.c_piso+')'):''}, ${state.c_localidad||''}, ${state.c_provincia||''} (${state.c_cp||''})</div><div class="col-6"><b>Actividad</b><br>${state.actividad||''} — ${act} · Inicio: ${state.fechaInicio||''}</div><div class="col-6"><b>Parámetros</b><br>Ingresos: $ ${Number(state.ingresos||0).toLocaleString('es-AR')} · Sup.: ${state.superficie||0} m² · Energía: ${state.energia||0} kWh · Alquiler: $ ${Number(state.alquiler||0).toLocaleString('es-AR')}</div><div class="col-6"><b>Otros</b><br>Obra social: ${state.obraSocial||'—'} · Débito automático: ${state.debito||'No'}</div><div class="col-12"><span class="badge ok">Categoría: ${state.categoria||'-'} — Cuota simulada $ ${Number(state.cuota||0).toLocaleString('es-AR')}</span></div></div>`; }
+  function renderConstancia(){ const act = ACTIVIDADES.find(a=>a.id===state.actividad)?.nombre || state.actividad || ''; $('#constanciaDatos').innerHTML = `<div style="line-height:1.7"><b>Grupo (${state.curso||''}):</b> ${(state.integrantes||[]).join(', ')}<br><b>Contribuyente:</b> ${state.apellido}, ${state.nombre} — ${state.tipoDoc} ${state.nroDoc} ${state.cuit?('— CUIT/CUIL '+state.cuit):''}<br><b>Contacto:</b> ${state.email} / ${state.telefono}<br><b>Domicilio fiscal:</b> ${state.calle} ${state.numero} ${state.piso?('('+state.piso+')'):''}, ${state.localidad}, ${state.provincia} (${state.cp})<br><b>Actividad:</b> ${state.actividad} — ${act} — <b>Inicio:</b> ${state.fechaInicio}<br><b>Categoría educativa:</b> ${state.categoria} — <b>Cuota simulada:</b> $ ${Number(state.cuota).toLocaleString('es-AR')}<br><b>Fecha de alta (simulada):</b> ${new Date().toLocaleString('es-AR')}</div>`; $('#codigo').textContent=state.codigo||'-'; }
+
+  const HEAD=["fechaRegistro","curso","integrantes","apellido","nombre","tipoDoc","nroDoc","cuit","nacimiento","genero","nacionalidad","email","telefono","calle","numero","piso","localidad","provincia","cp","c_calle","c_numero","c_piso","c_localidad","c_provincia","c_cp","actividad","actDesc","fechaInicio","factura","empleados","ingresos","superficie","energia","alquiler","obraSocial","debito","categoria","cuota","codigo"];
+  function htmlExcelFromRegistros(){ const escapeHTML=(s)=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); const rows=registros.map(r=>'<tr>'+HEAD.map(k=>`<td>${escapeHTML(r[k]??'')}</td>`).join('')+'</tr>').join(''); const head=HEAD.map(h=>`<th>${h}</th>`).join(''); return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><table border="1"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></body></html>`; }
+  async function elegirDestino(){ if(!window.showOpenFilePicker && !window.showSaveFilePicker){ alert('Tu navegador no permite escribir en archivos locales automáticamente. Usá Chrome/Edge/Brave o descargá datos.xls desde el paso 6.'); return; } try{ const opts={types:[{description:'CSV',accept:{'text/csv':['.csv']}},{description:'Excel HTML (.xls generado)',accept:{'application/vnd.ms-excel':['.xls']}}]}; try{ const [handle]=await showOpenFilePicker({multiple:false,types:opts.types}); destinoHandle=handle; destinoName=handle.name; $('#destInfo').textContent='Destino: '+destinoName; }catch(_){ const handle=await showSaveFilePicker({suggestedName:'datos.xls',types:opts.types}); destinoHandle=handle; destinoName=handle.name; $('#destInfo').textContent='Destino: '+destinoName; } }catch(e){ alert('No se pudo seleccionar el archivo.'); } }
+  async function escribirXLSFull(handle){ const writable=await handle.createWritable(); await writable.write(new Blob([htmlExcelFromRegistros()],{type:'application/vnd.ms-excel'})); await writable.close(); }
+  async function guardarEnDestino(){ if(!destinoHandle) return false; try{ if(destinoName.toLowerCase().endsWith('.xls')){ await escribirXLSFull(destinoHandle); } else { const file=await destinoHandle.getFile(); const text=await file.text(); const needsHeader=text.trim().length===0; const writable=await destinoHandle.createWritable(); if(needsHeader){ await writable.write(HEAD.join(',')+'\\n'); } await writable.write(text); const r=registros[registros.length-1]; const row=HEAD.map(k=>`"${String((r[k]??'')).replaceAll('"','""')}"`).join(',')+'\\n'; await writable.write(row); await writable.close(); } return true; }catch(e){ alert('No se pudo escribir en el archivo seleccionado.'); return false; } }
+  function exportExcel(){ const html=htmlExcelFromRegistros(); const blob=new Blob([html],{type:'application/vnd.ms-excel'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='datos.xls'; a.click(); URL.revokeObjectURL(url); }
+
+  function nextStep(){ if(validateStep(currentStep)){ showStep(currentStep+1); } }
+  function prevStep(){ showStep(Math.max(0,currentStep-1)); }
+  function confirmar(){ if(!validateStep(5)) return; const id='ARC'+Math.random().toString(36).slice(2,8).toUpperCase()+Date.now().toString().slice(-4); state.codigo=id; saveState(); const reg={fechaRegistro:new Date().toISOString(),curso:state.curso||'',integrantes:(state.integrantes||[]).join(' | '),apellido:state.apellido||'',nombre:state.nombre||'',tipoDoc:state.tipoDoc||'',nroDoc:state.nroDoc||'',cuit:state.cuit||'',nacimiento:state.nacimiento||'',genero:state.genero||'',nacionalidad:state.nacionalidad||'',email:state.email||'',telefono:state.telefono||'',calle:state.calle||'',numero:state.numero||'',piso:state.piso||'',localidad:state.localidad||'',provincia:state.provincia||'',cp:state.cp||'',c_calle:state.c_calle||'',c_numero:state.c_numero||'',c_piso:state.c_piso||'',c_localidad:state.c_localidad||'',c_provincia:state.c_provincia||'',c_cp:state.c_cp||'',actividad:state.actividad||'',actDesc:state.actDesc||'',fechaInicio:state.fechaInicio||'',factura:state.factura||'',empleados:state.empleados||'',ingresos:state.ingresos||'',superficie:state.superficie||'',energia:state.energia||'',alquiler:state.alquiler||'',obraSocial:state.obraSocial||'',debito:state.debito||'',categoria:state.categoria||'',cuota:state.cuota||'',codigo:state.codigo||''}; registros.push(reg); localStorage.setItem('arca_sim_registros_fixphone',JSON.stringify(registros)); guardarEnDestino().then(ok=>{ if(!ok) exportExcel(); showStep(6); }); }
+  function nuevaCarga(){ localStorage.removeItem('arca_sim_state_fixphone'); Object.keys(state).forEach(k=>delete state[k]); $$('input').forEach(i=>{if(i.type!=='checkbox') i.value=''; else i.checked=false;}); $$('select').forEach(s=>s.selectedIndex=0); $('#integrantesList').innerHTML=''; agregarIntegrante(); $('#domComercialBox').hidden=true; $('#categoriaBox').className='badge warn'; $('#categoriaBox').textContent='Complete ingresos para estimar categoría…'; showStep(0); }
+  function borrarRegistros(){ localStorage.removeItem('arca_sim_registros_fixphone'); alert('Se borraron las inscripciones guardadas en este navegador.'); }
+
+  initOptions();
+  if(state && Object.keys(state).length){ setVal('curso',state.curso); $('#integrantesList').innerHTML=''; (state.integrantes||['']).forEach(n=>agregarIntegrante(n)); for(const id of ["nombre","apellido","tipoDoc","nroDoc","cuit","nacimiento","genero","nacionalidad","email","telefono","calle","numero","piso","localidad","provincia","cp","c_calle","c_numero","c_piso","c_localidad","c_provincia","c_cp","actividad","actDesc","fechaInicio","factura","empleados","ingresos","superficie","energia","alquiler","obraSocial","debito"]) setVal(id,state[id]); calcCategoria(); if(state.c_provincia) $('#domComercialIgual').value='no', $('#domComercialBox').hidden=false; }
+  renderSteps(0); showStep(0);
+</script>
+</body>
+</html>
